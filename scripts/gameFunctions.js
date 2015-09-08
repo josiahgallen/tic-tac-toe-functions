@@ -6,10 +6,18 @@
  *
  * valid options include: '1', 'one', '2', or 'two'.
  * The function should be case insensitive, so 'one' and 'ONE' should both
- * result in true.
+ * result in 1.
  */
 function validateGameType(gameTypeString) {
-
+	if (typeof gameTypeString === 'object') {
+		return false;
+	}
+	if (gameTypeString == 1 || gameTypeString.toLowerCase() === 'one') {
+		return 1;
+	} else if (gameTypeString == 2 || gameTypeString.toLowerCase() === 'two') {
+		return 2;
+	}
+	return false;
 }
 
 /*
@@ -18,14 +26,27 @@ function validateGameType(gameTypeString) {
  * false if the name is not valid.
  */
 function validateName(name) {
-
+	if (typeof name == 'number' || typeof name === 'object' || name === '') {
+		return false;
+	}
+	var formatName = name.toLowerCase();
+	for (var i = 0; i < formatName.length; i++) {
+		if ((formatName.charCodeAt(i) < 97 || formatName.charCodeAt(i) > 122) && formatName.charAt(i) !== '-' && formatName.charAt(i) !== ' ') {
+			//console.log(formatName.charAt(i));
+			return false;
+		}
+	}
+	return name;
 }
 
 /*
  * Randomly generates and returns a name for a computer player.
  */
 function generateComputerName() {
-
+	var names = ['Kevin', 'Larry', 'Andre 5000', 'CPU', 'AI', 'I\'m smarter than you', 'Sally', 'LappyPro', 'LappyAir', 'Lappy'];
+	var whichName = Math.floor(Math.random() * 10)
+	var name = names[whichName];
+	return name;
 }
 
 /*
