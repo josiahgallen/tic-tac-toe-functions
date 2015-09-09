@@ -32,7 +32,6 @@ function validateName(name) {
 	var formatName = name.toLowerCase();
 	for (var i = 0; i < formatName.length; i++) {
 		if ((formatName.charCodeAt(i) < 97 || formatName.charCodeAt(i) > 122) && formatName.charAt(i) !== '-' && formatName.charAt(i) !== ' ') {
-			//console.log(formatName.charAt(i));
 			return false;
 		}
 	}
@@ -71,7 +70,14 @@ function generateComputerName() {
  * exception.
  */
 function parseMove(moveString) {
-
+	if (moveString === undefined || moveString.length !== 3 || typeof moveString === 'object' || moveString[1] !== ' ' || isNaN(moveString[0]) || isNaN(moveString[2])) {
+		throw 'Invalid input: the move must be in the format "x y"';
+	} 
+	var moveObj = {
+		x: parseInt(moveString[0] - 1),
+		y: parseInt(moveString[2] - 1)
+	};
+	return moveObj;
 }
 
 /*
@@ -89,7 +95,16 @@ function parseMove(moveString) {
  * If there are no errors then the function should return the move object.
  */
 function validateMove(moveObject, gameBoard) {
-
+	for (var key in moveObject) {
+		if (moveObject[key] > 2 || moveObject[key] < 0) {
+			throw 'Invalid move: the coordinates are outside the game board';
+		}
+	}
+	if (gameBoard[moveObject.y][moveObject.x] !== ' ') {
+		throw 'Invalid move: that spot is already taken';
+	}
+	
+	return moveObject;
 }
 
 /*
@@ -111,7 +126,13 @@ function validateMove(moveObject, gameBoard) {
  *   ~~~~~~~~~~~~~
  */
 function getGameBoardString(gameBoard) {
-
+	var boardString = '     1   2   3 \n  ~~~~~~~~~~~~~\n';
+	for (var i = 0; i < gameBoard.length; i++) {
+		boardString += i+1  + ' |';
+		boardString += ' ' + gameBoard[i].join(' | ') + ' |';
+		boardString += '\n  ~~~~~~~~~~~~~\n';
+	}
+	return boardString;
 }
 
 /*
@@ -119,7 +140,8 @@ function getGameBoardString(gameBoard) {
  * matrix, make the move on the gameBoard and return the gameBoard.
  */
 function makeMove(playerString, moveObject, gameBoard) {
-
+	gameBoard[moveObject.y][moveObject.x] = playerString;
+	return gameBoard;
 }
 
 /*
@@ -128,7 +150,15 @@ function makeMove(playerString, moveObject, gameBoard) {
  * For example, the game board might be 3x3, 4x4, or 5x7.
  */
 function getEmptySpaceCount(gameBoard) {
-
+	var blankCount = 0;
+	for (var i = 0; i < gameBoard.length; i++) {
+ 		for(var j = 0; j <gameBoard[i].length; j++) {
+ 			if (gameBoard[i][j] === ' ') {
+ 				blankCount++;
+ 			}
+ 		}
+	}
+	return blankCount;
 }
 
 /*
@@ -137,7 +167,11 @@ function getEmptySpaceCount(gameBoard) {
  * 'O' and vice versa.
  */
 function getNextPlayer(currentPlayer) {
-
+	if(currentPlayer === 'X') {
+		return currentPlayer = 'O';
+	} else if (currentPlayer === 'O') {
+		return currentPlayer = 'X';
+	}
 }
 
 /*
@@ -145,7 +179,36 @@ function getNextPlayer(currentPlayer) {
  * gameBoard matrix. If there is no winner than the function should return null.
  */
 function getWinner(gameBoard) {
-	
+	var winObj = {
+		row1: gameBoard[0].join(''),
+		row2: gameBoard[1].join(''),
+		row3: gameBoard[2].join(''),
+		col1: '',
+		col2: '',
+		col3: '',
+		diag1: '',
+		diag2: ''
+	}
+	for (var i = 0; i < gameBoard.length; i++) {
+		winObj.col1 += gameBoard[i][0];
+	}
+	for (var i = 0; i < gameBoard.length; i++) {
+		winObj.col2 += gameBoard[i][1];
+	}
+	for (var i = 0; i < gameBoard.length; i++) {
+		winObj.col3 += gameBoard[i][2];
+	}
+	winObj.diag1 += gameBoard[0][0] + gameBoard[1][1] + gameBoard[2][2];
+	winObj.diag2 += gameBoard[2][0] + gameBoard[1][1] + gameBoard[0][2];
+
+	for (var key in winObj) {
+		if (winObj[key] === 'XXX') {
+			return 'X';
+		} else if (winObj[key] === 'OOO') {
+			return 'O';
+		}
+	}
+	return null;
 }
 
 /*
@@ -156,7 +219,13 @@ function getWinner(gameBoard) {
  * insensitive, so it should accept both 'Y' and 'y' for example.
  */
 function validateYesNo(yesNoString) {
-
+	if (yesNoString.toLowerCase() === 'y' || yesNoString.toLowerCase() === 'yes') {
+		return true;
+	} else if (yesNoString.toLowerCase() === 'n' || yesNoString.toLowerCase() === 'no') {
+		return false;
+	} else {
+		return null;
+	}
 }
 
 /*
@@ -200,14 +269,24 @@ function validateYesNo(yesNoString) {
 function getComputerPlayerMove(player, gameBoard) {
 	// This code just moves to the next available space instead of using the
 	// algorithm outlined above.
-	for(var y = 0; y < gameBoard.length; y++) {
-		for(var x = 0; x < gameBoard[y].length; x++) {
-			if(gameBoard[y][x] === ' ') {
-				return {x: x, y: y};
+	// for(var y = 0; y < gameBoard.length; y++) {
+	// 	for(var x = 0; x < gameBoard[y].length; x++) {
+	// 		if(gameBoard[y][x] === ' ') {
+	// 			return {x: x, y: y};
+	// 		}
+	// 	}
+	// }
+	// return null;
+
+	if (player === 'X') {
+		if (gameBoard[0].join('') === 'XX') {
+			for (var i = 0; gameBoard[0].length; i++){
+				if (gameBoard[i] === ' '){
+					gameBoard[i] = 'X';
+				}
 			}
 		}
 	}
-	return null;
 }
 
 /*

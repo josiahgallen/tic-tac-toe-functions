@@ -29,7 +29,7 @@ describe('validateMove', function() {
 		expect(function() { gameFunctions.validateMove({x: 1, y: 1}, gameBoard2); }).to.throw('Invalid move: that spot is already taken');
 		expect(function() { gameFunctions.validateMove({x: 1, y: 2}, gameBoard2); }).to.throw('Invalid move: that spot is already taken');
 	});
-	it('should return true if it is a valid move', function() {
+	it('should return object if it is a valid move', function() {
 		expect(gameFunctions.validateMove({x: 0, y: 0}, gameBoard1)).to.deep.equal({x: 0, y: 0});
 		expect(gameBoard1[0][0]).to.equal(' ');
 		expect(gameFunctions.validateMove({x: 0, y: 0}, gameBoard2)).to.deep.equal({x: 0, y: 0});
